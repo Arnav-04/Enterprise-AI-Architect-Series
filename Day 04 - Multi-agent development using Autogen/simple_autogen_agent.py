@@ -9,27 +9,19 @@ load_dotenv()
 def build_chatbot():
     try:
         from autogen_agentchat.agents import AssistantAgent
-        from autogen_ext.models.openai import OpenAIChatCompletionClient
+        from autogen_ext.models.ollama import OllamaChatCompletionClient
     except ImportError as exc:
         raise RuntimeError(
-            "AutoGen packages are missing or incompatible. Install them with: "
-            "pip install 'autogen-agentchat' 'autogen-core' 'autogen-ext[openai]'"
+            "AutoGen Ollama packages are missing or incompatible. "
+            "Install them with: pip install 'autogen-agentchat' 'autogen-core' 'autogen-ext[ollama]'"
         ) from exc
 
     model = os.getenv("LOCAL_MODEL", "phi3")
-    base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434/v1")
+    host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 
-    model_client = OpenAIChatCompletionClient(
+    model_client = OllamaChatCompletionClient(
         model=model,
-        api_key="ollama",
-        base_url=base_url,
-        model_info={
-            "vision": False,
-            "function_calling": True,
-            "json_output": True,
-            "family": "llama",
-            "structured_output": True,
-        },
+        host=host,
     )
 
     return AssistantAgent(
